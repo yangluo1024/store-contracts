@@ -1,17 +1,17 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use self::exchange::PatraExchange;
+pub use self::exchange::{PatraExchange, PatraExchangeRef};
 use ink_lang as ink;
 
 #[ink::contract]
 mod exchange {
-    #[cfg(not(feature = "ink-as-dependency"))]
-    use lpt::Erc20;
-    #[cfg(not(feature = "ink-as-dependency"))]
+    // #[cfg(not(feature = "ink-as-dependency"))]
+    use lpt::Erc20Ref;
+    // #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
     use ink_prelude::string::String;
-    #[cfg(not(feature = "ink-as-dependency"))]
-    use ink_storage::Lazy;
+    // #[cfg(not(feature = "ink-as-dependency"))]
+    use ink_storage::lazy::Lazy;
 
     #[derive(Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode)]
     #[cfg_attr(
@@ -32,8 +32,8 @@ mod exchange {
     #[ink(storage)]
     pub struct PatraExchange {
         // address of the ERC20 token traded on this contract
-        token_contract: Lazy<Erc20>,
-        lp_token_contract: Lazy<Erc20>,
+        token_contract: Lazy<Erc20Ref>,
+        lp_token_contract: Lazy<Erc20Ref>,
         token: AccountId,
         init_deposit_dot: Balance,
     }
@@ -79,8 +79,8 @@ mod exchange {
     impl PatraExchange {
         #[ink(constructor)]
         pub fn new(token: AccountId, lpt: AccountId) -> Self {
-            let token_contract: Erc20 = FromAccountId::from_account_id(token);
-            let lp_token_contract: Erc20 = FromAccountId::from_account_id(lpt);
+            let token_contract: Erc20Ref = FromAccountId::from_account_id(token);
+            let lp_token_contract: Erc20Ref = FromAccountId::from_account_id(lpt);
             Self::env().emit_event(NewExchangeWithDot {
                 token,
                 exchange: Self::env().account_id(),

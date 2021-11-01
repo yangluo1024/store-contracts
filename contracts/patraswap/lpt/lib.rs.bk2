@@ -44,45 +44,6 @@ mod lpt {
         owner: AccountId,
     }
 
-    /// Event emitted when a token transfer occurs.
-    #[ink(event)]
-    pub struct Transfer {
-        #[ink(topic)]
-        from: Option<AccountId>,
-        #[ink(topic)]
-        to: Option<AccountId>,
-        #[ink(topic)]
-        value: Balance,
-    }
-
-    /// Event emitted when an approval occurs that `spender` is allowed to withdraw
-    /// up to the amount of `value` tokens from `owner`.
-    #[ink(event)]
-    pub struct Approval {
-        #[ink(topic)]
-        caller: AccountId,
-        #[ink(topic)]
-        spender: AccountId,
-        #[ink(topic)]
-        value: Balance,
-    }
-
-    #[ink(event)]
-    pub struct Mint {
-        #[ink(topic)]
-        user: AccountId,
-        #[ink(topic)]
-        amount: Balance,
-    }
-
-    #[ink(event)]
-    pub struct Burn {
-        #[ink(topic)]
-        user: AccountId,
-        #[ink(topic)]
-        amount: Balance,
-    }
-
     impl Erc20 {
         /// Creates a new ERC-20 contract with the specified initial supply.
         #[ink(constructor)]
@@ -104,11 +65,6 @@ mod lpt {
                 decimals,
                 owner: caller,
             };
-            Self::env().emit_event(Transfer {
-                from: None,
-                to: Some(caller),
-                value: initial_supply,
-            });
             instance
         }
 
@@ -207,11 +163,6 @@ mod lpt {
         pub fn approve(&mut self, spender: AccountId, value: Balance) -> Result<()> {
             let owner = self.env().caller();
             self.allowances.insert((owner, spender), value);
-            self.env().emit_event(Approval {
-                caller: owner,
-                spender,
-                value,
-            });
             Ok(())
         }
 
@@ -224,7 +175,6 @@ mod lpt {
             let user_balance = self.balance_of(user);
             self.balances.insert(user, user_balance + amount);
             *self.total_supply += amount;
-            self.env().emit_event(Mint { user, amount });
             Ok(())
         }
 
@@ -244,7 +194,6 @@ mod lpt {
 
             self.balances.insert(user, user_balance - amount);
             *self.total_supply -= amount;
-            self.env().emit_event(Burn { user, amount });
             Ok(())
         }
 
@@ -269,11 +218,6 @@ mod lpt {
             self.balances.insert(from, from_balance - value);
             let to_balance = self.balance_of(to);
             self.balances.insert(to, to_balance + value);
-            self.env().emit_event(Transfer {
-                from: Some(from),
-                to: Some(to),
-                value,
-            });
             Ok(())
         }
     }

@@ -46,9 +46,10 @@ ink-as-dependency = []
 [profile.release]
 overflow-checks = false
 
-[workspace]
-members = [
-    "lpt",
-    "exchange",
-    "exchange2",
-]
+
+# [workspace]
+# members = [
+#     "lpt",
+#     "exchange",
+#     "exchange2",
+# ]
