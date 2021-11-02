@@ -104,7 +104,8 @@ mod lpt {
                 decimals,
                 owner: caller,
             };
-            Self::env().emit_event( Transfer {
+            ::ink_lang::codegen::EmitEvent::<Erc20>::emit_event(Self::env(), Transfer {
+            // Self::env().emit_event( Transfer {
                 from: None,
                 to: Some(caller),
                 value: initial_supply,
@@ -207,7 +208,8 @@ mod lpt {
         pub fn approve(&mut self, spender: AccountId, value: Balance) -> Result<()> {
             let owner = self.env().caller();
             self.allowances.insert((owner, spender), value);
-            Self::env().emit_event( Approval {
+            ::ink_lang::codegen::EmitEvent::<Erc20>::emit_event(Self::env(), Approval {
+            // Self::env().emit_event( Approval {
                 caller: owner,
                 spender,
                 value,
@@ -224,7 +226,8 @@ mod lpt {
             let user_balance = self.balance_of(user);
             self.balances.insert(user, user_balance + amount);
             *self.total_supply += amount;
-            Self::env().emit_event( Mint {
+            ::ink_lang::codegen::EmitEvent::<Erc20>::emit_event(Self::env(), Mint {
+            // Self::env().emit_event( Mint {
                 user,
                 amount,
             });
@@ -247,7 +250,8 @@ mod lpt {
 
             self.balances.insert(user, user_balance - amount);
             *self.total_supply -= amount;
-            Self::env().emit_event( Burn {
+            ::ink_lang::codegen::EmitEvent::<Erc20>::emit_event(Self::env(), Burn {
+            // Self::env().emit_event( Burn {
                 user,
                 amount,
             });
@@ -275,7 +279,8 @@ mod lpt {
             self.balances.insert(from, from_balance - value);
             let to_balance = self.balance_of(to);
             self.balances.insert(to, to_balance + value);
-            Self::env().emit_event( Transfer {
+            ::ink_lang::codegen::EmitEvent::<Erc20>::emit_event(Self::env(), Transfer {
+            // Self::env().emit_event( Transfer {
                 from: Some(from),
                 to: Some(to),
                 value,
