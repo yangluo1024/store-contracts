@@ -7,8 +7,8 @@ mod factory {
     use ink_lang as ink;
 
     use lpt::Erc20;
-    use exchange::PatraExchange;
-    use exchange2::PatraExchange as PatraExchange2;
+    use exchange::PatraExchangeRef;
+    use exchange2::PatraExchange2Ref;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
     use ink_env::hash::Blake2x256;
@@ -146,7 +146,7 @@ mod factory {
 
             let salt = Hash::from(self.env().hash_bytes::<Blake2x256>(salt.clone().as_ref()));
             // instantiate exchange
-            let exchange_params = PatraExchange::new(from_token, to_token, lpt_account_id)
+            let exchange_params = PatraExchangeRef::new(from_token, to_token, lpt_account_id)
                 .endowment(0)
                 .code_hash(self.exchange_template)
                 .salt_bytes(salt)
@@ -164,7 +164,8 @@ mod factory {
                 .insert(self.token_count, (from_token, to_token));
             self.id_to_exchange
                 .insert(self.token_count, (exchange_account_id, lpt_account_id));
-            Self::env().emit_event(NewExchange {
+            ::ink_lang::codegen::EmitEvent::<PatraFactory>::emit_event(Self::env(), NewExchange {
+            // Self::env().emit_event(NewExchange {
                 token: from_token,
                 exchange: exchange_account_id,
                 lpt: lpt_account_id,
@@ -215,7 +216,7 @@ mod factory {
             let salt = Hash::from(self.env().hash_bytes::<Blake2x256>(salt.clone().as_ref()));
 
             // instantiate exchange
-            let exchange_params = PatraExchange2::new(from_token, lpt_account_id)
+            let exchange_params = PatraExchange2Ref::new(from_token, lpt_account_id)
                 .endowment(0)
                 .code_hash(self.exchange_template2)
                 .salt_bytes(salt)
@@ -233,7 +234,8 @@ mod factory {
                 .insert(self.token_count, (from_token, to_token));
             self.id_to_exchange
                 .insert(self.token_count, (exchange_account_id, lpt_account_id));
-            Self::env().emit_event(NewExchange {
+            ::ink_lang::codegen::EmitEvent::<PatraFactory>::emit_event(Self::env(), NewExchange {
+            // Self::env().emit_event(NewExchange {
                 token: from_token,
                 exchange: exchange_account_id,
                 lpt: lpt_account_id,

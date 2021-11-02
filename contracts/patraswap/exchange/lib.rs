@@ -1,16 +1,16 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use self::exchange::PatraExchange;
+pub use self::exchange::{PatraExchange, PatraExchangeRef};
 use ink_lang as ink;
 
 #[ink::contract]
 mod exchange {
-    #[cfg(not(feature = "ink-as-dependency"))]
-    use lpt::Erc20;
-    #[cfg(not(feature = "ink-as-dependency"))]
+    // #[cfg(not(feature = "ink-as-dependency"))]
+    use lpt::Erc20Ref;
+    // #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
     use ink_prelude::string::String;
-    #[cfg(not(feature = "ink-as-dependency"))]
+    // #[cfg(not(feature = "ink-as-dependency"))]
     use ink_storage::Lazy;
 
     #[derive(Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode)]
@@ -32,9 +32,9 @@ mod exchange {
     #[ink(storage)]
     pub struct PatraExchange {
         // address of the ERC20 token traded on this contract
-        from_token_contract: Lazy<Erc20>,
-        to_token_contract: Lazy<Erc20>,
-        lp_token_contract: Lazy<Erc20>,
+        from_token_contract: Lazy<Erc20Ref>,
+        to_token_contract: Lazy<Erc20Ref>,
+        lp_token_contract: Lazy<Erc20Ref>,
         from_token: AccountId,
         to_token: AccountId,
     }
@@ -82,10 +82,11 @@ mod exchange {
     impl PatraExchange {
         #[ink(constructor)]
         pub fn new(from_token: AccountId, to_token: AccountId, lpt: AccountId) -> Self {
-            let from_token_contract: Erc20 = FromAccountId::from_account_id(from_token);
-            let to_token_contract: Erc20 = FromAccountId::from_account_id(to_token);
-            let lp_token_contract: Erc20 = FromAccountId::from_account_id(lpt);
-            Self::env().emit_event(NewExchange {
+            let from_token_contract: Erc20Ref = FromAccountId::from_account_id(from_token);
+            let to_token_contract: Erc20Ref = FromAccountId::from_account_id(to_token);
+            let lp_token_contract: Erc20Ref = FromAccountId::from_account_id(lpt);
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), NewExchange {
+            // Self::env().emit_event(NewExchange {
                 from_token,
                 to_token,
                 exchange: Self::env().account_id(),
@@ -182,7 +183,8 @@ mod exchange {
                 .from_token_contract
                 .transfer(recipient, from_bought)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: to_sold,
                 bought: from_bought,
@@ -209,7 +211,8 @@ mod exchange {
                 .from_token_contract
                 .transfer(recipient, from_bought)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: to_sold,
                 bought: from_bought,
@@ -236,7 +239,8 @@ mod exchange {
                 .to_token_contract
                 .transfer(recipient, to_bought)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: from_sold,
                 bought: to_bought,
@@ -263,7 +267,8 @@ mod exchange {
                 .to_token_contract
                 .transfer(recipient, to_bought)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: from_sold,
                 bought: to_bought,
@@ -303,7 +308,8 @@ mod exchange {
                     .lp_token_contract
                     .mint(caller, liquidity_minted)
                     .is_ok());
-                self.env().emit_event(AddLiquidity {
+                ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), AddLiquidity {
+                // self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
                     to_amount: token_amount,
@@ -320,7 +326,8 @@ mod exchange {
                     .is_ok());
                 // PAT balance of an account (LP token)
                 assert!(self.lp_token_contract.mint(caller, from_tokens).is_ok());
-                self.env().emit_event(AddLiquidity {
+                ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), AddLiquidity {
+                // self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
                     to_amount: to_tokens,
@@ -349,7 +356,8 @@ mod exchange {
                 .is_ok());
             assert!(self.to_token_contract.transfer(caller, to_amount).is_ok());
             assert!(self.lp_token_contract.burn(caller, lp_amount).is_ok());
-            self.env().emit_event(RemoveLiquidity {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), RemoveLiquidity {
+            // self.env().emit_event(RemoveLiquidity {
                 sender: caller,
                 from_amount,
                 to_amount,
@@ -427,7 +435,7 @@ mod exchange {
 
     impl PatraExchange {
         // Pricing function for converting between DOT and Tokens.
-        #[cfg(not(feature = "ink-as-dependency"))]
+        // #[cfg(not(feature = "ink-as-dependency"))]
         fn get_input_price(
             input_amount: Balance,
             input_reserve: Balance,
@@ -440,7 +448,7 @@ mod exchange {
         }
 
         // Pricing function for converting between DOT and Tokens.
-        #[cfg(not(feature = "ink-as-dependency"))]
+        // #[cfg(not(feature = "ink-as-dependency"))]
         fn get_output_price(
             output_amount: Balance,
             input_reserve: Balance,

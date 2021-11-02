@@ -1,6 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use self::exchange::{PatraExchange, PatraExchangeRef};
+pub use self::exchange::{PatraExchange2, PatraExchange2Ref};
 use ink_lang as ink;
 
 #[ink::contract]
@@ -30,7 +30,7 @@ mod exchange {
     }
 
     #[ink(storage)]
-    pub struct PatraExchange {
+    pub struct PatraExchange2 {
         // address of the ERC20 token traded on this contract
         token_contract: Lazy<Erc20Ref>,
         lp_token_contract: Lazy<Erc20Ref>,
@@ -76,12 +76,12 @@ mod exchange {
         exchange: AccountId,
     }
 
-    impl PatraExchange {
+    impl PatraExchange2 {
         #[ink(constructor)]
         pub fn new(token: AccountId, lpt: AccountId) -> Self {
             let token_contract: Erc20Ref = FromAccountId::from_account_id(token);
             let lp_token_contract: Erc20Ref = FromAccountId::from_account_id(lpt);
-            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), NewExchangeWithDot {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(Self::env(), NewExchangeWithDot {
             // Self::env().emit_event(NewExchangeWithDot {
                 token,
                 exchange: Self::env().account_id(),
@@ -172,7 +172,7 @@ mod exchange {
                 .token_contract
                 .transfer(recipient, tokens_bought)
                 .is_ok());
-            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(Self::env(), TokenSwap {
             // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: dot_sold,
@@ -201,7 +201,7 @@ mod exchange {
                 .token_contract
                 .transfer(recipient, tokens_bought)
                 .is_ok());
-            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(Self::env(), TokenSwap {
                 buyer,
                 sold: dot_sold,
                 bought: tokens_bought,
@@ -225,7 +225,7 @@ mod exchange {
                 .token_contract
                 .transfer_from(buyer, exchange_account, tokens_sold)
                 .is_ok());
-            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(Self::env(), TokenSwap {
             // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: tokens_sold,
@@ -250,7 +250,7 @@ mod exchange {
                 .token_contract
                 .transfer_from(buyer, exchange_account, tokens_sold)
                 .is_ok());
-            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(Self::env(), TokenSwap {
             // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: tokens_sold,
@@ -260,7 +260,7 @@ mod exchange {
         }
     }
 
-    impl PatraExchange {
+    impl PatraExchange2 {
         /// Deposit DOT and Tokens (self.token) at current ratio to mint PAT tokens.
         // @return The amount of PAT minted.
         #[ink(message, payable)]
@@ -286,7 +286,7 @@ mod exchange {
                     .lp_token_contract
                     .mint(caller, liquidity_minted)
                     .is_ok());
-                ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), AddLiquidity {
+                ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(Self::env(), AddLiquidity {
                 // self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
@@ -300,7 +300,7 @@ mod exchange {
                     .is_ok());
                 // PAT balance of an account (LP token)
                 assert!(self.lp_token_contract.mint(caller, from_tokens).is_ok());
-                ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), AddLiquidity {
+                ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(Self::env(), AddLiquidity {
                 // self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
@@ -327,7 +327,7 @@ mod exchange {
             assert!(self.token_contract.transfer(caller, from_amount).is_ok());
             assert!(self.env().transfer(caller, to_amount).is_ok());
             assert!(self.lp_token_contract.burn(caller, lp_amount).is_ok());
-            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(self.env(), RemoveLiquidity {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange2>::emit_event(self.env(), RemoveLiquidity {
             // self.env().emit_event(RemoveLiquidity {
                 sender: caller,
                 from_amount,
@@ -405,9 +405,9 @@ mod exchange {
         }
     }
 
-    impl PatraExchange {
+    impl PatraExchange2 {
         // Pricing function for converting between DOT and Tokens.
-        #[cfg(not(feature = "ink-as-dependency"))]
+        // #[cfg(not(feature = "ink-as-dependency"))]
         fn get_input_price(
             input_amount: Balance,
             input_reserve: Balance,
@@ -420,7 +420,7 @@ mod exchange {
         }
 
         // Pricing function for converting between DOT and Tokens.
-        #[cfg(not(feature = "ink-as-dependency"))]
+        // #[cfg(not(feature = "ink-as-dependency"))]
         fn get_output_price(
             output_amount: Balance,
             input_reserve: Balance,
