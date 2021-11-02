@@ -81,7 +81,8 @@ mod exchange {
         pub fn new(token: AccountId, lpt: AccountId) -> Self {
             let token_contract: Erc20Ref = FromAccountId::from_account_id(token);
             let lp_token_contract: Erc20Ref = FromAccountId::from_account_id(lpt);
-            Self::env().emit_event(NewExchangeWithDot {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), NewExchangeWithDot {
+            // Self::env().emit_event(NewExchangeWithDot {
                 token,
                 exchange: Self::env().account_id(),
             });
@@ -171,7 +172,8 @@ mod exchange {
                 .token_contract
                 .transfer(recipient, tokens_bought)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: dot_sold,
                 bought: tokens_bought,
@@ -199,7 +201,7 @@ mod exchange {
                 .token_contract
                 .transfer(recipient, tokens_bought)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
                 buyer,
                 sold: dot_sold,
                 bought: tokens_bought,
@@ -223,7 +225,8 @@ mod exchange {
                 .token_contract
                 .transfer_from(buyer, exchange_account, tokens_sold)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: tokens_sold,
                 bought: dot_bought,
@@ -247,7 +250,8 @@ mod exchange {
                 .token_contract
                 .transfer_from(buyer, exchange_account, tokens_sold)
                 .is_ok());
-            self.env().emit_event(TokenSwap {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), TokenSwap {
+            // self.env().emit_event(TokenSwap {
                 buyer,
                 sold: tokens_sold,
                 bought: dot_bought,
@@ -282,7 +286,8 @@ mod exchange {
                     .lp_token_contract
                     .mint(caller, liquidity_minted)
                     .is_ok());
-                self.env().emit_event(AddLiquidity {
+                ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), AddLiquidity {
+                // self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
                     to_amount: token_amount,
@@ -295,7 +300,8 @@ mod exchange {
                     .is_ok());
                 // PAT balance of an account (LP token)
                 assert!(self.lp_token_contract.mint(caller, from_tokens).is_ok());
-                self.env().emit_event(AddLiquidity {
+                ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), AddLiquidity {
+                // self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
                     to_amount: to_tokens,
@@ -321,7 +327,8 @@ mod exchange {
             assert!(self.token_contract.transfer(caller, from_amount).is_ok());
             assert!(self.env().transfer(caller, to_amount).is_ok());
             assert!(self.lp_token_contract.burn(caller, lp_amount).is_ok());
-            self.env().emit_event(RemoveLiquidity {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), RemoveLiquidity {
+            // self.env().emit_event(RemoveLiquidity {
                 sender: caller,
                 from_amount,
                 to_amount,
