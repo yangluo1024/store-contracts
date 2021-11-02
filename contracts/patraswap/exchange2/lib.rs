@@ -327,7 +327,7 @@ mod exchange {
             assert!(self.token_contract.transfer(caller, from_amount).is_ok());
             assert!(self.env().transfer(caller, to_amount).is_ok());
             assert!(self.lp_token_contract.burn(caller, lp_amount).is_ok());
-            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(Self::env(), RemoveLiquidity {
+            ::ink_lang::codegen::EmitEvent::<PatraExchange>::emit_event(self.env(), RemoveLiquidity {
             // self.env().emit_event(RemoveLiquidity {
                 sender: caller,
                 from_amount,
